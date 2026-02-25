@@ -1,0 +1,667 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Lorato • Little Spotlight</title>
+  <meta name="theme-color" content="#0b0b0f" />
+  <style>
+    :root{
+      --bg1:#07070a; --bg2:#0f1020;
+      --card:#0f1220cc;
+      --text:#f6f7ff; --muted:#b9bdd6;
+      --accent:#7c5cff; --accent2:#35d0ff; --accent3:#ff4fd8;
+      --ring: rgba(124,92,255,.35);
+      --shadow: 0 22px 70px rgba(0,0,0,.55);
+    }
+    *{box-sizing:border-box}
+    html,body{height:100%}
+    body{
+      margin:0;
+      font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Arial, "Apple Color Emoji","Segoe UI Emoji";
+      color:var(--text);
+      background:
+        radial-gradient(1100px 600px at 20% 15%, rgba(124,92,255,.28), transparent 60%),
+        radial-gradient(900px 500px at 85% 25%, rgba(53,208,255,.22), transparent 62%),
+        radial-gradient(900px 600px at 50% 90%, rgba(255,79,216,.12), transparent 60%),
+        linear-gradient(180deg, var(--bg1), var(--bg2));
+      overflow-x:hidden;
+    }
+
+    /* Floating blur orbs */
+    .orb{
+      position:fixed;
+      width:360px;height:360px;
+      border-radius:50%;
+      filter: blur(50px);
+      opacity:.55;
+      pointer-events:none;
+      mix-blend-mode: screen;
+      animation: float 10s ease-in-out infinite;
+    }
+    .orb.one{left:-120px;top:10%; background:rgba(124,92,255,.35); animation-duration:11.5s}
+    .orb.two{right:-150px;top:18%; background:rgba(53,208,255,.28); animation-duration:13s}
+    .orb.three{left:20%;bottom:-170px; background:rgba(255,79,216,.18); animation-duration:14.5s}
+    @keyframes float{
+      0%,100%{transform: translate(0,0) scale(1)}
+      50%{transform: translate(35px,-25px) scale(1.08)}
+    }
+
+    .wrap{
+      min-height:100%;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      padding:22px 14px 30px;
+      position:relative;
+    }
+
+    .shell{
+      width:min(980px, 100%);
+      display:grid;
+      grid-template-columns: 1.1fr .9fr;
+      gap:18px;
+    }
+
+    .card{
+      background: linear-gradient(180deg, rgba(255,255,255,.08), rgba(255,255,255,.04));
+      border:1px solid rgba(255,255,255,.10);
+      border-radius:22px;
+      box-shadow: var(--shadow);
+      backdrop-filter: blur(14px);
+      -webkit-backdrop-filter: blur(14px);
+      overflow:hidden;
+      position:relative;
+    }
+
+    .hero{
+      padding:22px 20px 18px;
+      position:relative;
+    }
+
+    .topline{
+      display:flex; align-items:center; justify-content:space-between;
+      gap:10px;
+      margin-bottom:14px;
+    }
+    .chip{
+      display:inline-flex; align-items:center; gap:8px;
+      padding:8px 12px;
+      border-radius:999px;
+      background: rgba(255,255,255,.07);
+      border:1px solid rgba(255,255,255,.10);
+      color:var(--muted);
+      font-size:12.5px;
+      letter-spacing:.2px;
+      user-select:none;
+    }
+    .dot{
+      width:8px;height:8px;border-radius:50%;
+      background: linear-gradient(135deg, var(--accent), var(--accent2));
+      box-shadow: 0 0 18px rgba(124,92,255,.55);
+      animation: pulse 1.6s ease-in-out infinite;
+    }
+    @keyframes pulse{
+      0%,100%{transform:scale(1); opacity:.85}
+      50%{transform:scale(1.5); opacity:1}
+    }
+
+    h1{
+      margin: 10px 0 6px;
+      font-size: clamp(28px, 3.8vw, 44px);
+      line-height:1.05;
+      letter-spacing:-.6px;
+    }
+    .sub{
+      margin:0 0 18px;
+      color:var(--muted);
+      font-size: 14.5px;
+      line-height:1.5;
+    }
+
+    .name{
+      background: linear-gradient(90deg, var(--accent), var(--accent2), var(--accent3));
+      -webkit-background-clip:text;
+      background-clip:text;
+      color:transparent;
+      filter: drop-shadow(0 10px 30px rgba(124,92,255,.18));
+    }
+
+    .grid{
+      display:grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap:12px;
+      margin-top:12px;
+    }
+
+    .tile{
+      border-radius:18px;
+      padding:14px 14px 12px;
+      background: rgba(15,18,32,.55);
+      border:1px solid rgba(255,255,255,.10);
+      position:relative;
+      overflow:hidden;
+      transform: translateY(6px);
+      opacity:0;
+      animation: pop .65s ease forwards;
+    }
+    .tile:nth-child(1){animation-delay:.12s}
+    .tile:nth-child(2){animation-delay:.2s}
+    .tile:nth-child(3){animation-delay:.28s}
+    .tile:nth-child(4){animation-delay:.36s}
+
+    @keyframes pop{
+      to{transform: translateY(0); opacity:1}
+    }
+
+    .tile .label{
+      color:var(--muted);
+      font-size:12px;
+      letter-spacing:.3px;
+      text-transform:uppercase;
+      margin-bottom:6px;
+    }
+    .tile .value{
+      font-size:17px;
+      font-weight:700;
+      line-height:1.2;
+    }
+    .tile .spark{
+      position:absolute;
+      inset:-60px -80px auto auto;
+      width:160px;height:160px;
+      background: radial-gradient(circle at 30% 30%, rgba(53,208,255,.22), transparent 60%),
+                  radial-gradient(circle at 70% 70%, rgba(124,92,255,.18), transparent 55%);
+      filter: blur(2px);
+      transform: rotate(25deg);
+    }
+
+    /* Right panel */
+    .panel{
+      padding:20px;
+      display:flex;
+      flex-direction:column;
+      gap:12px;
+      height:100%;
+    }
+
+    .mini{
+      padding:14px 14px 12px;
+      border-radius:18px;
+      background: rgba(15,18,32,.55);
+      border:1px solid rgba(255,255,255,.10);
+    }
+
+    .mini h2{
+      margin:0 0 8px;
+      font-size:16px;
+      letter-spacing:-.2px;
+    }
+    .mini p{
+      margin:0;
+      color:var(--muted);
+      font-size:13.5px;
+      line-height:1.55;
+    }
+
+    .btnrow{
+      display:flex; gap:10px; flex-wrap:wrap;
+      margin-top:8px;
+    }
+    button{
+      border:0;
+      cursor:pointer;
+      border-radius:14px;
+      padding:11px 13px;
+      font-weight:700;
+      font-size:13.5px;
+      color:var(--text);
+      background: rgba(255,255,255,.07);
+      border:1px solid rgba(255,255,255,.12);
+      transition: transform .12s ease, background .15s ease, box-shadow .15s ease;
+      user-select:none;
+    }
+    button:hover{transform: translateY(-1px); box-shadow: 0 10px 30px rgba(0,0,0,.22)}
+    button.primary{
+      background: linear-gradient(135deg, rgba(124,92,255,.95), rgba(53,208,255,.80));
+      border:1px solid rgba(255,255,255,.16);
+      box-shadow: 0 14px 40px rgba(124,92,255,.20);
+    }
+    button.primary:hover{box-shadow: 0 18px 55px rgba(124,92,255,.28)}
+    button.danger{
+      background: linear-gradient(135deg, rgba(255,79,216,.75), rgba(124,92,255,.75));
+    }
+
+    /* Typewriter box */
+    .typebox{
+      position:relative;
+      padding:16px 14px 14px;
+      border-radius:18px;
+      background: rgba(15,18,32,.55);
+      border:1px solid rgba(255,255,255,.10);
+      min-height:122px;
+      overflow:hidden;
+    }
+    .typebox .title{
+      display:flex; align-items:center; justify-content:space-between;
+      gap:10px;
+      margin-bottom:10px;
+    }
+    .typebox .title span{
+      font-size:12px;
+      color:var(--muted);
+      text-transform:uppercase;
+      letter-spacing:.35px;
+    }
+    .cursor{
+      display:inline-block;
+      width:10px;
+      border-bottom:2px solid rgba(255,255,255,.75);
+      transform: translateY(-2px);
+      animation: blink 1s steps(1) infinite;
+      margin-left:2px;
+    }
+    @keyframes blink{50%{opacity:0}}
+
+    #typed{
+      font-size:14.5px;
+      line-height:1.65;
+      color: rgba(246,247,255,.95);
+      white-space:pre-wrap;
+    }
+
+    /* Confetti canvas */
+    canvas#fx{
+      position:fixed;
+      inset:0;
+      pointer-events:none;
+      z-index:5;
+    }
+
+    /* Footer hint */
+    .hint{
+      margin-top:auto;
+      text-align:center;
+      color:rgba(185,189,214,.7);
+      font-size:12.5px;
+      padding-top:6px;
+    }
+
+    /* Mobile */
+    @media (max-width: 880px){
+      .shell{grid-template-columns: 1fr; gap:14px}
+      .panel{padding:16px}
+      .hero{padding:18px 16px 14px}
+      .grid{grid-template-columns: 1fr 1fr}
+    }
+    @media (max-width: 420px){
+      .grid{grid-template-columns: 1fr}
+    }
+
+    /* Entrance animation */
+    .card{
+      transform: translateY(10px);
+      opacity:0;
+      animation: enter .75s ease forwards;
+    }
+    .card:nth-child(2){animation-delay:.12s}
+    @keyframes enter{
+      to{transform: translateY(0); opacity:1}
+    }
+
+    /* Tiny sparkle particles */
+    .sparkle{
+      position:absolute;
+      width:6px;height:6px;border-radius:50%;
+      background: rgba(255,255,255,.75);
+      box-shadow: 0 0 18px rgba(53,208,255,.35);
+      opacity:.0;
+      animation: sparkle 2.4s ease-in-out infinite;
+    }
+    @keyframes sparkle{
+      0%{transform: translate(0,0) scale(.6); opacity:0}
+      20%{opacity:.85}
+      50%{transform: translate(14px,-22px) scale(1.15); opacity:.6}
+      100%{transform: translate(28px,-44px) scale(.8); opacity:0}
+    }
+  </style>
+</head>
+
+<body>
+  <div class="orb one"></div>
+  <div class="orb two"></div>
+  <div class="orb three"></div>
+  <canvas id="fx"></canvas>
+
+  <div class="wrap">
+    <main class="shell">
+      <!-- Left -->
+      <section class="card hero" aria-label="Lorato Spotlight">
+        <div class="topline">
+          <div class="chip"><span class="dot"></span> Calm • Clean • Bright energy</div>
+          <div class="chip" id="liveClock">Loading…</div>
+        </div>
+
+        <h1>
+          A little spotlight for
+          <span class="name" id="name">Lorato Ludo Kebabonye</span>
+        </h1>
+
+        <p class="sub">
+          Not doing too much… just the kind of vibe that stands out quietly.
+          Tap around — there are a few surprises.
+        </p>
+
+        <div class="grid" role="list">
+          <div class="tile" role="listitem">
+            <div class="spark"></div>
+            <div class="label">Calm</div>
+            <div class="value">Soft presence, strong aura</div>
+          </div>
+
+          <div class="tile" role="listitem">
+            <div class="spark"></div>
+            <div class="label">Intelligent</div>
+            <div class="value">You move like you think</div>
+          </div>
+
+          <div class="tile" role="listitem">
+            <div class="spark"></div>
+            <div class="label">Innocent</div>
+            <div class="value">Pure vibe, no noise</div>
+          </div>
+
+          <div class="tile" role="listitem">
+            <div class="spark"></div>
+            <div class="label">Good heart</div>
+            <div class="value">Kindness that’s real</div>
+          </div>
+        </div>
+
+        <!-- random sparkles -->
+        <div class="sparkle" style="left:18px; bottom:22px; animation-delay:.2s"></div>
+        <div class="sparkle" style="left:70px; bottom:16px; animation-delay:.9s"></div>
+        <div class="sparkle" style="left:130px; bottom:18px; animation-delay:1.5s"></div>
+      </section>
+
+      <!-- Right -->
+      <aside class="card panel" aria-label="Interactive panel">
+        <div class="typebox">
+          <div class="title">
+            <span>Message</span>
+            <span id="modeTag">Tap “Next”</span>
+          </div>
+          <div id="typed"></div><span class="cursor" aria-hidden="true"></span>
+        </div>
+
+        <div class="mini">
+          <h2>Quick taps</h2>
+          <p>
+            Keep it light. Keep it classy. The page does the talking — not you.
+          </p>
+          <div class="btnrow">
+            <button class="primary" id="nextBtn">Next ✨</button>
+            <button id="vibeBtn">Change vibe 🎧</button>
+            <button class="danger" id="confettiBtn">Confetti 🎉</button>
+          </div>
+        </div>
+
+        <div class="mini">
+          <h2>Small detail</h2>
+          <p>
+            “Calm” isn’t boring — it’s power with self-control.
+          </p>
+        </div>
+
+        <div class="hint">
+          Tip: Open on phone, tap “Next” slowly. 🙂
+        </div>
+      </aside>
+    </main>
+  </div>
+
+  <script>
+    // =========================
+    // Customize here if you want
+    // =========================
+    const PERSON_NAME = "Lorato Ludo Kebabonye";
+
+    // Messages are intentionally subtle (no heavy confessing)
+    const scripts = [
+      [
+        `Hey ${PERSON_NAME.split(" ")[0]}…`,
+        "This is random but I had to say it:",
+        "You give calm energy — the kind that makes things feel settled.",
+        "Not loud. Not forced. Just… real."
+      ],
+      [
+        "You also seem smart.",
+        "Like you don’t rush things — you observe first.",
+        "That’s rare these days."
+      ],
+      [
+        "And your vibe feels innocent in a good way —",
+        "clean heart, clean intentions.",
+        "It shows."
+      ],
+      [
+        "Anyway… that’s it.",
+        "No pressure, no drama.",
+        "Just a small spotlight, because you deserve one."
+      ]
+    ];
+
+    const vibeSets = [
+      { tag: "CalmAnalytics", glow: ["#7c5cff", "#35d0ff", "#ff4fd8"] },
+      { tag: "MidnightAura",  glow: ["#35d0ff", "#7c5cff", "#a8ff78"] },
+      { tag: "SoftNeon",      glow: ["#ff4fd8", "#35d0ff", "#7c5cff"] }
+    ];
+
+    // ===== Helpers
+    const $ = (id) => document.getElementById(id);
+
+    // Clock
+    function tickClock(){
+      const d = new Date();
+      const hh = String(d.getHours()).padStart(2,"0");
+      const mm = String(d.getMinutes()).padStart(2,"0");
+      $("liveClock").textContent = `${hh}:${mm} • live`;
+    }
+    tickClock();
+    setInterval(tickClock, 1000 * 10);
+
+    // Set name
+    $("name").textContent = PERSON_NAME;
+
+    // Typewriter
+    let scriptIndex = 0;
+    let lineIndex = 0;
+    let charIndex = 0;
+    let typing = false;
+
+    function setModeTag(){
+      const label = `${scriptIndex+1}/${scripts.length}`;
+      $("modeTag").textContent = `Message ${label}`;
+    }
+
+    function sleep(ms){ return new Promise(r => setTimeout(r, ms)); }
+
+    async function typeLine(line){
+      typing = true;
+      const box = $("typed");
+      // new line spacing
+      if (box.textContent.length) box.textContent += "\n";
+      for (let i=0; i<line.length; i++){
+        box.textContent += line[i];
+        // small "human" rhythm
+        const jitter = (Math.random()*30)|0;
+        await sleep(18 + jitter);
+      }
+      typing = false;
+    }
+
+    async function next(){
+      if (typing) return;
+
+      const box = $("typed");
+      const currentScript = scripts[scriptIndex];
+
+      if (lineIndex === 0 && box.textContent.length === 0){
+        setModeTag();
+      }
+
+      if (lineIndex < currentScript.length){
+        await typeLine(currentScript[lineIndex]);
+        lineIndex++;
+        // tiny pause between lines
+        await sleep(160);
+        return;
+      }
+
+      // Move to next script
+      scriptIndex++;
+      lineIndex = 0;
+
+      if (scriptIndex >= scripts.length){
+        // End: gentle finish + little sparkle
+        await sleep(180);
+        softConfetti(120);
+        $("modeTag").textContent = "Done ✅";
+        $("nextBtn").textContent = "Restart ↻";
+        return;
+      }
+
+      // clear for next set
+      box.textContent = "";
+      setModeTag();
+      await sleep(120);
+      await next();
+    }
+
+    $("nextBtn").addEventListener("click", async () => {
+      // Restart logic
+      if ($("nextBtn").textContent.includes("Restart")){
+        scriptIndex = 0; lineIndex = 0;
+        $("typed").textContent = "";
+        $("nextBtn").textContent = "Next ✨";
+        setModeTag();
+        await next();
+        return;
+      }
+      await next();
+    });
+
+    // Vibe switch
+    let vibeIndex = 0;
+    function applyVibe(){
+      const v = vibeSets[vibeIndex % vibeSets.length];
+      document.documentElement.style.setProperty("--accent", v.glow[0]);
+      document.documentElement.style.setProperty("--accent2", v.glow[1]);
+      document.documentElement.style.setProperty("--accent3", v.glow[2]);
+      $("modeTag").textContent = v.tag;
+      // quick micro confetti
+      softConfetti(40);
+    }
+    $("vibeBtn").addEventListener("click", () => {
+      vibeIndex++;
+      applyVibe();
+    });
+
+    // Confetti
+    const canvas = $("fx");
+    const ctx = canvas.getContext("2d");
+    let W, H;
+    function resize(){
+      W = canvas.width = window.innerWidth * devicePixelRatio;
+      H = canvas.height = window.innerHeight * devicePixelRatio;
+      canvas.style.width = window.innerWidth + "px";
+      canvas.style.height = window.innerHeight + "px";
+      ctx.setTransform(devicePixelRatio,0,0,devicePixelRatio,0,0);
+    }
+    window.addEventListener("resize", resize);
+    resize();
+
+    let confetti = [];
+    function rand(min,max){ return Math.random()*(max-min)+min; }
+
+    function makePiece(){
+      const colors = [
+        getComputedStyle(document.documentElement).getPropertyValue("--accent").trim(),
+        getComputedStyle(document.documentElement).getPropertyValue("--accent2").trim(),
+        getComputedStyle(document.documentElement).getPropertyValue("--accent3").trim(),
+        "rgba(255,255,255,.85)"
+      ];
+      return {
+        x: rand(0, window.innerWidth),
+        y: rand(-40, -10),
+        r: rand(3, 7),
+        w: rand(8, 14),
+        h: rand(8, 16),
+        vx: rand(-1.2, 1.2),
+        vy: rand(2.6, 5.2),
+        rot: rand(0, Math.PI*2),
+        vr: rand(-0.18, 0.18),
+        color: colors[(Math.random()*colors.length)|0],
+        life: rand(70, 140)
+      };
+    }
+
+    function softConfetti(count=120){
+      for (let i=0;i<count;i++){
+        confetti.push(makePiece());
+      }
+    }
+
+    function draw(){
+      ctx.clearRect(0,0,window.innerWidth, window.innerHeight);
+      for (let i=confetti.length-1;i>=0;i--){
+        const p = confetti[i];
+        p.x += p.vx;
+        p.y += p.vy;
+        p.rot += p.vr;
+        p.vy += 0.02; // gravity
+        p.life -= 1;
+
+        ctx.save();
+        ctx.translate(p.x, p.y);
+        ctx.rotate(p.rot);
+        ctx.globalAlpha = Math.max(0, Math.min(1, p.life/120));
+        ctx.fillStyle = p.color;
+        // rounded rect
+        roundRect(ctx, -p.w/2, -p.h/2, p.w, p.h, 3);
+        ctx.fill();
+        ctx.restore();
+
+        if (p.y > window.innerHeight + 30 || p.life <= 0){
+          confetti.splice(i,1);
+        }
+      }
+      requestAnimationFrame(draw);
+    }
+
+    function roundRect(c, x,y,w,h,r){
+      const rr = Math.min(r, w/2, h/2);
+      c.beginPath();
+      c.moveTo(x+rr,y);
+      c.arcTo(x+w,y,x+w,y+h,rr);
+      c.arcTo(x+w,y+h,x,y+h,rr);
+      c.arcTo(x,y+h,x,y,rr);
+      c.arcTo(x,y,x+w,y,rr);
+      c.closePath();
+    }
+    draw();
+
+    $("confettiBtn").addEventListener("click", () => softConfetti(180));
+
+    // Auto-start a subtle first message after a moment
+    setTimeout(() => { if (!$("typed").textContent) next(); }, 650);
+
+    // Allow tap anywhere on right panel to go next (nice for phones)
+    document.querySelector(".panel").addEventListener("click", (e) => {
+      // avoid double-trigger on buttons
+      if (e.target.tagName.toLowerCase() === "button") return;
+      $("nextBtn").click();
+    }, { passive:true });
+  </script>
+</body>
+  </html>
